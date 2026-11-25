@@ -150,6 +150,13 @@ Each slice ends deployable and demoable in Stripe test mode.
 
 Estimated build: slices 1 to 3 roughly one focused week; 4 to 6 another week or two **[estimate]**.
 
+### Build notes (slice 2, 2026-11-25)
+
+- "Available now" is stored as an expiry time and compared to the clock, so no cron job is needed to turn it off.
+- Connected accounts request only the `transfers` capability (platform charges, then transfers). **[Unverified]** that Stripe allows transfers-only US Express accounts; test mode will confirm on the first onboarding.
+- Stripe's date of birth is stored as `stripe_individual_is_adult` (true/false/unknown). **[Unverified]** whether Stripe shares `individual.dob` with the platform for Express accounts. If it stays unknown, slice 3 must decide: block transfers, or rely on our own DOB check.
+- Worker photos are in a private bucket. Posters will get short-lived signed links in slice 3.
+
 ## 8. Risks not already in the brief
 
 - **Chargeback exposure** (from F4): the platform eats disputes. Price cap and suspend-on-first-chargeback mitigate.

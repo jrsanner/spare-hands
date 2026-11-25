@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireGate } from "@/lib/session";
 import { signOut } from "@/app/actions/auth";
 import { formatUsPhone } from "@/lib/phone";
@@ -18,7 +19,10 @@ export default async function HomePage() {
         {roles.includes("worker") && (
           <section className="rounded-lg border border-stone-200 bg-white p-4">
             <h2 className="font-medium">Earn money</h2>
-            <p className="text-sm text-stone-600">Your helper profile and availability are coming next.</p>
+            <p className="text-sm text-stone-600">Set up your helper profile, weekly hours and payouts.</p>
+            <Link href="/worker" className="mt-2 inline-block text-sm font-medium text-emerald-800 underline">
+              Go to helper dashboard
+            </Link>
           </section>
         )}
       </div>

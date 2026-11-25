@@ -2,7 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 import { supabaseEnv } from "./env";
 
-const PUBLIC_PATHS = ["/", "/login", "/terms"];
+const PUBLIC_PATHS = ["/", "/login", "/terms", "/api/stripe/webhook"];
 
 /** Refreshes the auth cookie on every request and bounces signed-out users from private pages. */
 export async function updateSession(request: NextRequest) {

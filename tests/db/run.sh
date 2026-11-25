@@ -14,4 +14,4 @@ $RUN_AS "$PGBIN/pg_ctl" -D "$TMP/data" -o "-p $PORT -k $TMP -c listen_addresses=
 PSQL=(psql -h "$TMP" -p "$PORT" -U postgres -d postgres -v ON_ERROR_STOP=1 -q)
 "${PSQL[@]}" -f "$ROOT/tests/db/auth_shim.sql"
 for f in "$ROOT"/supabase/migrations/*.sql; do "${PSQL[@]}" -f "$f"; done
-for f in "$ROOT"/tests/db/*_test.sql; do "${PSQL[@]}" -f "$f"; done
+for f in "$ROOT"/tests/db/*_test.sql; do "${PSQL[@]}" -o /dev/null -f "$f"; done

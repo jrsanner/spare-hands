@@ -5,7 +5,9 @@ Product and technical decisions live in [SPEC.md](SPEC.md).
 
 ## Status
 
-Slice 1 of 7: phone sign-in, onboarding (name, date of birth, 18+, zip 15601, roles), suspended-account gate, admin flag.
+- Slice 1: phone sign-in, onboarding (name, date of birth, 18+, zip 15601, roles), suspended-account gate, admin flag.
+- Slice 2: worker profile (job types, area, rate, intro, social link), private photo upload, weekly hours,
+  "available now" (3 hours, turns itself off), Stripe Connect Express payout setup + webhook sync.
 
 ## Stack
 
@@ -30,7 +32,11 @@ npm run lint
 3. Auth > Providers > Phone: enable, choose **Twilio Verify**, add the Twilio Account SID, auth token and Verify service SID.
    Turn email sign-up off.
 4. Optional for testing without texts: add test numbers + fixed codes under Auth > Phone.
-5. Make yourself admin: `update public.profiles set is_admin = true where phone = '+1XXXXXXXXXX';`
+5. Storage: the `worker-photos` bucket is created by the migration (private, 5 MB, JPEG/PNG/WebP).
+6. Stripe (test mode): copy the secret key into `STRIPE_SECRET_KEY`. Enable Connect. Add a webhook endpoint at
+   `https://<site>/api/stripe/webhook` listening to **events on connected accounts**: `account.updated`.
+   Put its signing secret in `STRIPE_WEBHOOK_SECRET`. Locally: `stripe listen --forward-connect-to localhost:3000/api/stripe/webhook`.
+7. Make yourself admin: `update public.profiles set is_admin = true where phone = '+1XXXXXXXXXX';`
 
 ## Rules enforced in the database (not just the UI)
 
@@ -38,6 +44,9 @@ npm run lint
 - Users can read only their own profile (admins read all). No direct writes from the browser.
 - `complete_onboarding()` rejects: under 18 (computed in America/New_York), impossible dates of birth,
   zips not in `service_zips`, unknown roles, missing 18+ confirmation, suspended accounts.
+- Worker writes go through `save_worker_profile`, `set_worker_photo`, `set_weekly_availability`, `set_available_now`.
+  Stripe fields are written only by the server with the secret key.
+- "Available now" is a stored expiry compared to the clock, so it turns off with no scheduled job.
 - New service zips: `insert into public.service_zips (zip, town) values ('15644', 'Jeannette, PA');`
 
 ## Local DB tests
